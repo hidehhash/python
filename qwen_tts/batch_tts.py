@@ -15,13 +15,16 @@ import concat_wav
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_NAME = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"
 
+my_inst_anna = 'かわいらしい声で話す'
+my_inst_eric = '明朗で、一語一語はっきりと語る'
+
 # 原稿ファイル、話者、出力ファイル名
 jobs = [
-    ("i1.txt", "Ono_Anna", "i1.wav"),
-    ("i2.txt", "Eric", "i2.wav"),
-    ("i3.txt", "Ono_Anna", "i3.wav"),
-    ("i4.txt", "Eric", "i4.wav"),
-    ("i5.txt", "Ono_Anna", "i5.wav"),
+    ("i1.txt", "Ono_Anna", "i1.wav", my_inst_anna),
+    ("i2.txt", "Eric", "i2.wav", my_inst_eric),
+    ("i3.txt", "Ono_Anna", "i3.wav", my_inst_anna),
+    ("i4.txt", "Eric", "i4.wav", my_inst_eric),
+    ("i5.txt", "Ono_Anna", "i5.wav", my_inst_anna),
 ]
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -37,7 +40,7 @@ model = Qwen3TTSModel.from_pretrained(
     dtype=dtype,
 )
 
-for input_name, speaker, output_name in jobs:
+for input_name, speaker, output_name, my_inst in jobs:
     input_path = BASE_DIR / input_name
     output_path = BASE_DIR / output_name
 
@@ -54,6 +57,7 @@ for input_name, speaker, output_name in jobs:
             text=text,
             language="Japanese",
             speaker=speaker,
+            instruct=my_inst,
         )
         audio = wavs[0]
 
